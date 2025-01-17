@@ -1,0 +1,12 @@
+with-expecter: True
+issue-845-fix: True
+dir: "mocks"
+exclude: ["mocks"]
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "Mock{{.InterfaceName}}.go"
+all: True
+packages:
+  mockery-test:
+    config:
+      recursive: True
