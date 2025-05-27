@@ -1,0 +1,50 @@
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative metrics.proto
+
+syntax = "proto3";
+option go_package = "./proto";
+
+package Metrics;
+
+message Sample {
+  int64 time_sec = 1;
+  double value = 2;
+}
+
+message SampleStream {
+  map<string,string> meta = 2;
+  repeated Sample samples = 3;
+}
+
+message MetricSelector {
+  // Device UUID.
+  string uuid = 1;
+  // Metric application name. E.g. "cpu".
+  string app = 2;
+  // Metric field name. E.g. "loadavg".
+  string field = 3;
+  // Metric aggregation type. E.g. "avg", "value".
+  string agg_type = 4;
+  // Metric metadata map.
+  map<string,string> meta = 5;
+}
+
+message QueryRangeRequest {
+  MetricSelector selector = 1;
+  int64 start_sec = 2;
+  int64 end_sec = 3;
+  // Step size of the returned samples in seconds.
+  // If the step is greater than zero, the server will aggregate samples in each step according to the aggregation type.
+  // Zero step means return raw samples.
+  int64 step_sec = 4;
+  // Client can provide query hints to the server.
+  // E.g. "kind" is used by server to select a limiter.
+  map<string,string> hints = 5;
+}
+
+message QueryRangeResponse {
+  repeated SampleStream streams = 1;
+}
+
+service MetricsService {
+  rpc QueryRange(QueryRangeRequest) returns (QueryRangeResponse){}
+}
