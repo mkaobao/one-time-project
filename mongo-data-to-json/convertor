@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# 原始資料
+input_file="datas"
+
+output=`cat "$input_file" | \
+sed -E 's/ObjectId\("([^"]+)"\)/"\1"/g' | \
+sed -E 's/NumberLong\(([0-9]+)\)/\1/g' | \
+sed -E 's/ISODate\("([^"]+)"\)/"\1"/g' | \
+sed -E 's/(.*)/\1,/g'`
+
+echo "[${output::-1}]" > $input_file
